@@ -1,5 +1,49 @@
 curl http://localhost:8080/completion -d '{
-  "prompt": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\nYou are a helpful assistant.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\nHello! How are you?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n",
+  "prompt": "<|begin_of_text|><|start_header_id|>system<|end_header_id|>\nYou are a helpful assistant.<|eot_id|>\n<|start_header_id|>user<|end_header_id|>\nHello! where is mumbai?<|eot_id|>\n<|start_header_id|>assistant<|end_header_id|>\n",
   "temperature": 0.7,
   "max_tokens": 256
 }'
+
+
+
+<VirtualHost *:80>
+  ServerName cib.finobank.com
+  DocumentRoot /var/www/html/fino-payments-build
+  Redirect permanent / https://cib.finobank.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName cib.finobank.com
+  DocumentRoot /var/www/html/fino-payments-build
+  SSLEngine on
+  SSLCertificateFile /etc/apache2/certs/cib_finobank_com.crt
+  SSLCertificateKeyFile /etc/apache2/certs/cib_finobank_com.key
+  SSLCertificateChainFile /etc/apache2/certs/intermediate.crt
+  SSLProtocol -all +TLSv1.2
+</VirtualHost>
+ServerTokens Prod
+ServerSignature Off
+
+
+
+
+
+api.cib.finobank.com
+
+<VirtualHost *:80>
+  ServerName api.cib.finobank.com
+  Redirect permanent / https://api.cib.finobank.com/
+</VirtualHost>
+
+<VirtualHost *:443>
+  ServerName api.cib.finobank.com
+
+  SSLEngine on
+  SSLCertificateFile /etc/apache2/certs/new-certs/cib_finobank_com.crt
+  SSLCertificateKeyFile /etc/apache2/certs/new-certs/cib_finobank_com.key
+  SSLCertificateChainFile /etc/apache2/certs/new-certs/Intermediate.crt
+
+  ProxyRequests off
+  ProxyPreserveHost On
+  ProxyPass /  http://10.71.89.112:8080/cib_backend/  acquire=3000 timeout=600 Keepalive=On
+</VirtualHost>
